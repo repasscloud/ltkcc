@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using LTKCC.Services;
+using LTKCC.ViewModels;
+using LTKCC.Views;
+using Microsoft.Extensions.Logging;
 using SQLitePCL;
 
 namespace LTKCC;
@@ -19,6 +22,11 @@ public static class MauiProgram
 			});
 
 		builder.Services.AddSingleton<Data.AppDb>();
+
+		builder.Services.AddSingleton<IClientService, ClientService>();
+
+		builder.Services.AddTransient<ClientsViewModel>();
+		builder.Services.AddTransient<ClientsPage>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

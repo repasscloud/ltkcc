@@ -31,6 +31,10 @@
         <ShellContent Title="Home" ContentTemplate="{DataTemplate views:HomePage}" />
     </FlyoutItem>
 
+    <FlyoutItem Title="Clients" Route="clients">
+        <ShellContent Title="Clients" ContentTemplate="{DataTemplate views:ClientsPage}" />
+    </FlyoutItem>
+
     <FlyoutItem Title="Settings" Route="settings">
         <ShellContent Title="Settings" ContentTemplate="{DataTemplate views:SettingsPage}" />
     </FlyoutItem>
