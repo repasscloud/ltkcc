@@ -24,9 +24,13 @@ public static class MauiProgram
 		builder.Services.AddSingleton<Data.AppDb>();
 
 		builder.Services.AddSingleton<IClientService, ClientService>();
+		builder.Services.AddSingleton<ISupportedApplicationService, SupportedApplicationService>();
 
 		builder.Services.AddTransient<ClientsViewModel>();
 		builder.Services.AddTransient<ClientsPage>();
+		builder.Services.AddTransient<SupportedApplicationsViewModel>();
+		builder.Services.AddTransient<SupportedApplicationsPage>();
+
 
 #if DEBUG
 		builder.Logging.AddDebug();

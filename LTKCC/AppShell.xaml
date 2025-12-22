@@ -35,6 +35,10 @@
         <ShellContent Title="Clients" ContentTemplate="{DataTemplate views:ClientsPage}" />
     </FlyoutItem>
 
+    <FlyoutItem Title="Supported Applications" Route="supportedapplications">
+        <ShellContent Title="Supported Applications" ContentTemplate="{DataTemplate views:SupportedApplicationsPage}" />
+    </FlyoutItem>
+
     <FlyoutItem Title="Settings" Route="settings">
         <ShellContent Title="Settings" ContentTemplate="{DataTemplate views:SettingsPage}" />
     </FlyoutItem>

@@ -34,6 +34,11 @@ public sealed class AppDb
             "CREATE UNIQUE INDEX IF NOT EXISTS IX_Client_Name_NOCASE ON Client(Name COLLATE NOCASE);"
         );
 
+        await _db.CreateTableAsync<SupportedApplication>();
+        await _db.ExecuteAsync(
+            "CREATE UNIQUE INDEX IF NOT EXISTS IX_SupportedApplication_Name_NOCASE ON SupportedApplication(Name COLLATE NOCASE);"
+        );
+
         await _db.CreateTableAsync<AppEnv>();
         
         await _db.CreateTableAsync<HtmlTemplate>();
