@@ -21,8 +21,8 @@ jobs:
       - name: Install MAUI workload
         run: dotnet workload install maui --ignore-failed-sources
 
-      - name: Restore
-        run: dotnet restore .\LTKCC\LTKCC.csproj
+      - name: Restore (Windows RID)
+        run: dotnet restore .\LTKCC\LTKCC.csproj -f net8.0-windows10.0.19041.0 -r win-x64
 
-      - name: Build (Windows)
-        run: dotnet build .\LTKCC\LTKCC.csproj -c Release -f net8.0-windows10.0.19041.0 --no-restore
+      - name: Build (Windows RID)
+        run: dotnet build .\LTKCC\LTKCC.csproj -c Release -f net8.0-windows10.0.19041.0 -r win-x64 --no-restore
