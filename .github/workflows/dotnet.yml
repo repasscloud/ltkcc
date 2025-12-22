@@ -1,5 +1,3 @@
-# Builds on Windows instead of Ubuntu
-
 name: .NET (Windows)
 
 on:
@@ -20,11 +18,11 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Install MAUI workload
+        run: dotnet workload install maui --ignore-failed-sources
 
-      - name: Build
-        run: dotnet build --no-restore -c Release
+      - name: Restore
+        run: dotnet restore .\LTKCC\LTKCC.csproj
 
-      - name: Build Windows TFM
-        run: dotnet build -c Release -f net8.0-windows10.0.19041.0 --no-restore
+      - name: Build (Windows)
+        run: dotnet build .\LTKCC\LTKCC.csproj -c Release -f net8.0-windows10.0.19041.0 --no-restore
