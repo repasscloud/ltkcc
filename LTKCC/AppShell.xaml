@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="LTKCC.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:LTKCC"
+    xmlns:views="clr-namespace:LTKCC.Views"
+    Shell.FlyoutBehavior="Flyout"
+    Title="LTKCC">
+
+    <!-- Controls how each FlyoutItem row is rendered -->
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <!-- tweak Padding to taste -->
+            <Grid Padding="18,14,18,14">
+                <Label
+                    Text="{Binding Title}"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Fill"
+                    HorizontalTextAlignment="Start"
+                    FontSize="16" />
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
+    <FlyoutItem Title="Main" Route="main">
+        <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Home" Route="home">
+        <ShellContent Title="Home" ContentTemplate="{DataTemplate views:HomePage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Settings" Route="settings">
+        <ShellContent Title="Settings" ContentTemplate="{DataTemplate views:SettingsPage}" />
+    </FlyoutItem>
+
+</Shell>

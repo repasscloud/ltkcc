@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LTKCC.Views.HomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Home">
+
+    <VerticalStackLayout Padding="16" Spacing="12">
+        <Label Text="Home Page" FontSize="24" />
+
+        <!-- Demo: jump to another main screen -->
+        <Button Text="Go to Settings (main screen)"
+                Clicked="OnGoSettingsClicked" />
+    </VerticalStackLayout>
+</ContentPage>
