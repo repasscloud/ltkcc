@@ -1,3 +1,4 @@
+// File: Views/WorkflowStepDefinitionsPage.xaml.cs
 using LTKCC.ViewModels;
 
 namespace LTKCC.Views;
@@ -12,9 +13,14 @@ public partial class WorkflowStepDefinitionsPage : ContentPage
         BindingContext = vm;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        await Vm.LoadAsync();
+
+        // Keep OnAppearing non-async.
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            await Vm.LoadAsync();
+        });
     }
 }

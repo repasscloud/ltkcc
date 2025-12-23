@@ -327,11 +327,4 @@ public partial class WorkflowStepDefinitionsViewModel : ObservableObject
         await Shell.Current.GoToAsync(
             $"workflow-step-definition-details?id={Uri.EscapeDataString(row.Id)}");
     }
-
-    // Simple bindable row item for template list selection UI
-    public sealed partial class TemplateFileItem : ObservableObject
-    {
-        [ObservableProperty] private string fileName = "";
-        [ObservableProperty] private bool isSelected;
-    }
 }
