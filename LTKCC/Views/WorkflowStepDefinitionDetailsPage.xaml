@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LTKCC.Views.WorkflowStepDefinitionDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Workflow Step Definition">
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="12" RowSpacing="12">
+
+        <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding IsBusy}">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center"/>
+            <Label Grid.Column="1" Text="{Binding BusyText}" VerticalOptions="Center" Margin="10,0,0,0"/>
+        </Grid>
+
+        <Frame Grid.Row="1"
+               IsVisible="{Binding HasError}"
+               BorderColor="{AppThemeBinding Light=Tomato, Dark=Tomato}"
+               Padding="10">
+            <Label Text="{Binding ErrorText}" />
+        </Frame>
+
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout Spacing="12">
+
+                <Label Text="Name" FontAttributes="Bold" />
+                <Label Text="{Binding Name}" />
+
+                <Label Text="Template file" FontAttributes="Bold" />
+                <Label Text="{Binding TemplateFileName}" FontSize="12" Opacity="0.8" />
+
+                <Label Text="Parameters (read-only)" FontAttributes="Bold" />
+                <Editor Text="{Binding ParametersText}"
+                        IsReadOnly="True"
+                        AutoSize="TextChanges"
+                        HeightRequest="220" />
+
+                <HorizontalStackLayout Spacing="10">
+                    <Button Text="Back" Command="{Binding BackCommand}" />
+                    <Button Text="Delete"
+                            Command="{Binding DeleteCommand}" />
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+</ContentPage>

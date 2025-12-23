@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LTKCC.Views.WorkflowStepDefinitionsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:LTKCC.ViewModels"
+    Title="Workflow Step Definitions">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Refresh" Command="{Binding LoadCommand}" />
+        <ToolbarItem Text="New" Command="{Binding BeginNewCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="12" RowSpacing="12">
+
+        <!-- Busy -->
+        <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding IsBusy}">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" VerticalOptions="Center"/>
+            <Label Grid.Column="1" Text="{Binding BusyText}" VerticalOptions="Center" Margin="10,0,0,0"/>
+        </Grid>
+
+        <!-- Error -->
+        <Frame Grid.Row="1"
+               IsVisible="{Binding HasError}"
+               BorderColor="{AppThemeBinding Light=Tomato, Dark=Tomato}"
+               Padding="10">
+            <Label Text="{Binding ErrorText}" />
+        </Frame>
+
+        <!-- Main -->
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout Spacing="14">
+
+                <!-- Create new (create-only) -->
+                <Frame IsVisible="{Binding IsCreatingNew}" Padding="12">
+                    <VerticalStackLayout Spacing="10">
+
+                        <Label Text="Create new definition" FontAttributes="Bold" />
+
+                        <Label Text="Name" />
+                        <Entry Text="{Binding NewName}" Placeholder="e.g. Planned Windows Server Patching" />
+
+                        <Label Text="Templates (from Templates directory)" />
+
+                        <Button Text="Refresh templates"
+                                Command="{Binding RefreshTemplatesCommand}"
+                                IsVisible="{Binding ShowTemplatePicker}" />
+
+                        <CollectionView ItemsSource="{Binding TemplateItems}"
+                                        HeightRequest="220"
+                                        IsVisible="{Binding ShowTemplatePicker}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Frame Padding="10" Margin="0,0,0,8">
+                                        <!-- tap anywhere on the row selects the template -->
+                                        <Frame.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding BindingContext.SelectTemplateCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                CommandParameter="{Binding .}" />
+                                        </Frame.GestureRecognizers>
+
+                                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                            <Label Text="{Binding FileName}" Grid.Row="0" Grid.Column="0" />
+                                            <Button Text="Select"
+                                                    Grid.Row="0" Grid.Column="1"
+                                                    Command="{Binding BindingContext.SelectTemplateCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                    CommandParameter="{Binding .}" />
+
+                                            <Label Text="Selected"
+                                                   Grid.Row="1" Grid.ColumnSpan="2"
+                                                   IsVisible="{Binding IsSelected}"
+                                                   FontSize="12"
+                                                   Opacity="0.8" />
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <Button Text="Change template"
+                                Command="{Binding ChangeTemplateCommand}"
+                                IsVisible="{Binding HasSelectedTemplate}" />
+
+                        <Label Text="Selected template:" FontSize="12" Opacity="0.8" />
+                        <Label Text="{Binding SelectedTemplateFile}" FontAttributes="Bold" />
+
+                        <Label Text="Parameters (read-only)" />
+                        <Editor Text="{Binding ExtractedParamsText}"
+                                IsReadOnly="True"
+                                AutoSize="TextChanges"
+                                HeightRequest="140" />
+
+                        <HorizontalStackLayout Spacing="10">
+                            <Button Text="Save"
+                                    Command="{Binding SaveNewCommand}" />
+                            <Button Text="Cancel"
+                                    Command="{Binding CancelNewCommand}" />
+                        </HorizontalStackLayout>
+
+                        <Label Text="Note: definitions are create-only (read-only after saving)."
+                               FontSize="12" Opacity="0.7" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- List -->
+                <Label Text="Existing definitions" FontAttributes="Bold" />
+
+                <CollectionView ItemsSource="{Binding Items}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Padding="10" Margin="0,0,0,10">
+                                <!-- THIS is the missing piece: tap opens details -->
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding BindingContext.OpenDetailsCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                        CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
+
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                    <Label Text="{Binding TemplateFileName}" FontSize="12" Opacity="0.8" />
+                                    <Label FontSize="12" Opacity="0.8">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Created (UTC): " />
+                                                <Span Text="{Binding CreatedUtc}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+</ContentPage>

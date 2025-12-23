@@ -70,6 +70,7 @@ public sealed class AppDb
 
         await _db.CreateTableAsync<WorkflowRow>();
         await _db.CreateTableAsync<WorkflowStepRow>();
+        await _db.CreateTableAsync<WorkflowStepDefinitionRow>();
         await _db.CreateTableAsync<ScheduledTaskRow>();
         await _db.CreateTableAsync<ScheduledTaskRunRow>();
         await _db.CreateTableAsync<WorkflowStepRunRow>();

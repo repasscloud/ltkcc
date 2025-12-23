@@ -17,7 +17,7 @@ public static class AppPaths
         Directory.CreateDirectory(dir);
         return dir;
 #else
-        var dir = Path.Combine(FileSystem.AppDataDirectory, "LTKCC");
+        var dir = FileSystem.AppDataDirectory;
         Directory.CreateDirectory(dir);
         return dir;
 #endif

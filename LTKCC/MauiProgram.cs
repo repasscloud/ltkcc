@@ -1,4 +1,5 @@
-﻿using LTKCC.Services;
+﻿using LTKCC.Data;
+using LTKCC.Services;
 using LTKCC.ViewModels;
 using LTKCC.Views;
 using Microsoft.Extensions.Logging;
@@ -42,6 +43,15 @@ public static class MauiProgram
 		builder.Services.AddSingleton<ITemplateFileService, TemplateFileService>();
 		builder.Services.AddSingleton<TemplatesViewModel>();
 		builder.Services.AddSingleton<TemplatesPage>();
+
+		builder.Services.AddSingleton<IHtmlTemplateStore, HtmlTemplateStore>();
+		builder.Services.AddSingleton<WorkflowStepDefinitionRepository>();
+
+		builder.Services.AddTransient<WorkflowStepDefinitionsViewModel>();
+		builder.Services.AddTransient<WorkflowStepDefinitionsPage>();
+
+		builder.Services.AddTransient<LTKCC.ViewModels.WorkflowStepDefinitionDetailsViewModel>();
+		builder.Services.AddTransient<LTKCC.Views.WorkflowStepDefinitionDetailsPage>();
 
 		// builder.Services.AddTransient<WorkflowRunnerViewModel>();
 		// builder.Services.AddTransient<WorkflowRunnerPage>();

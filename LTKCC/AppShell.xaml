@@ -43,6 +43,12 @@
         <ShellContent ContentTemplate="{DataTemplate views:TemplatesPage}" />
     </FlyoutItem>
 
+    <FlyoutItem Title="Workflow Step Definitions">
+        <ShellContent
+            ContentTemplate="{DataTemplate views:WorkflowStepDefinitionsPage}"
+            Route="workflow-step-definitions" />
+    </FlyoutItem>
+
     <FlyoutItem Title="SendGrid Settings" Route="sendgridsettings">
         <ShellContent Title="SendGrid Settings" ContentTemplate="{DataTemplate views:SendGridSettingsPage}" />
     </FlyoutItem>
