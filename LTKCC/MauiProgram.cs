@@ -38,6 +38,10 @@ public static class MauiProgram
 		builder.Services.AddTransient<DistributionListsViewModel>();
 		builder.Services.AddTransient<DistributionListsPage>();
 
+		builder.Services.AddSingleton<ITemplateFileService, TemplateFileService>();
+		builder.Services.AddSingleton<TemplatesViewModel>();
+		builder.Services.AddSingleton<TemplatesPage>();
+
 		// builder.Services.AddTransient<WorkflowRunnerViewModel>();
 		// builder.Services.AddTransient<WorkflowRunnerPage>();
 #if DEBUG

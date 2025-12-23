@@ -7,8 +7,5 @@ public partial class SettingsPage : ContentPage
         InitializeComponent();
     }
 
-    private async void OnGoMainClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync("//main");
-    }
+    public static string BaseDir { get; } = Services.AppPaths.GetBaseDataDir();
 }

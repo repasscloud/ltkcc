@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- File: Views/TemplateEditorPage.xaml -->
+<ContentPage
+    x:Class="LTKCC.Views.TemplateEditorPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Template Editor">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="12" RowSpacing="10">
+
+        <Label x:Name="TitleLabel"
+               FontSize="20"
+               FontAttributes="Bold" />
+
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*" ColumnSpacing="10">
+            <Label Text="Filename"
+                   VerticalOptions="Center" />
+            <Entry x:Name="FileNameEntry"
+                   Grid.Column="1"
+                   Placeholder="example.html" />
+        </Grid>
+
+        <Editor x:Name="HtmlEditor"
+                Grid.Row="2"
+                Placeholder="Paste / type HTML here..."
+                AutoSize="TextChanges" />
+
+        <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="10">
+            <Button Text="Cancel" Clicked="OnCancelClicked" />
+            <Button Text="Save" Grid.Column="1" Clicked="OnSaveClicked" />
+        </Grid>
+
+    </Grid>
+</ContentPage>

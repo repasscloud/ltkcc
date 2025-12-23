@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- File: Views/TemplatesPage.xaml -->
+<ContentPage
+    x:Class="LTKCC.Views.TemplatesPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Templates">
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="12" RowSpacing="10">
+
+        <!-- Buttons -->
+        <ScrollView Grid.Row="0" Orientation="Horizontal">
+            <HorizontalStackLayout Spacing="8">
+
+                <Button Text="Refresh" Clicked="OnRefreshClicked" />
+                <Button Text="Add" Clicked="OnAddClicked" />
+                <Button Text="New" Clicked="OnNewClicked" />
+
+                <Button Text="Edit" Clicked="OnEditClicked">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding Selected}" Value="{x:Null}">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+                <Button Text="Rename" Clicked="OnRenameClicked">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding Selected}" Value="{x:Null}">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+                <Button Text="Delete" Clicked="OnDeleteClicked">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding Selected}" Value="{x:Null}">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <!-- List -->
+        <CollectionView
+            Grid.Row="1"
+            ItemsSource="{Binding Templates}"
+            SelectionMode="Single"
+            SelectedItem="{Binding Selected, Mode=TwoWay}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="10">
+                        <Label Text="{Binding FileName}" FontSize="14" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Status -->
+        <Label
+            Grid.Row="2"
+            Text="{Binding StatusMessage}"
+            FontSize="12"
+            LineBreakMode="WordWrap" />
+
+    </Grid>
+</ContentPage>

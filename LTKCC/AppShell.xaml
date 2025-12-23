@@ -39,6 +39,10 @@
         <ShellContent ContentTemplate="{DataTemplate views:DistributionListsPage}" />
     </FlyoutItem>
 
+    <FlyoutItem Title="Templates" Route="templates">
+        <ShellContent ContentTemplate="{DataTemplate views:TemplatesPage}" />
+    </FlyoutItem>
+
     <FlyoutItem Title="SendGrid Settings" Route="sendgridsettings">
         <ShellContent Title="SendGrid Settings" ContentTemplate="{DataTemplate views:SendGridSettingsPage}" />
     </FlyoutItem>

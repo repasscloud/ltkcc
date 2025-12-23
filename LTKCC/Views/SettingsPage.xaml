@@ -5,10 +5,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="Settings">
 
-    <VerticalStackLayout Padding="16" Spacing="12">
-        <Label Text="Settings Page" FontSize="24" />
-
-        <Button Text="Go to Main"
-                Clicked="OnGoMainClicked" />
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <!-- Base Dir -->
+            <Label Text="Base Directory" />
+            <Entry Text="{Binding BaseDir}" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
