@@ -12,17 +12,8 @@ public sealed class AppDb
 
     public AppDb()
     {
-#if WINDOWS
-        var dir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-            "LTKCC");
-
-        Directory.CreateDirectory(dir);
-
-        var dbPath = Path.Combine(dir, "ltkcc.db3");
-#else
-        var dbPath = Path.Combine(FileSystem.AppDataDirectory, "ltkcc.db3");
-#endif
+        // automatically creates the file if it doesn't exist and sets path based on OS
+        var dbPath = Services.AppPaths.GetDatabasePath();
 
         _db = new SQLiteAsyncConnection(
             dbPath,

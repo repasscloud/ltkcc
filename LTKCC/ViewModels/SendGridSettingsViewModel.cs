@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LTKCC.Data;
 using LTKCC.Models;
+using LTKCC.Services;
 
 namespace LTKCC.ViewModels;
 
@@ -16,15 +17,17 @@ namespace LTKCC.ViewModels;
 public partial class SendGridSettingsViewModel : ObservableObject
 {
     private readonly AppDb _db;
+    private readonly IAlertService _alerts;
 
     // Ensures InitAsync is only run once, even if multiple callers race (page appearing, etc.)
     private readonly SemaphoreSlim _initLock = new(1, 1);
     private bool _dbReady;
 
-    public SendGridSettingsViewModel(AppDb db)
+    public SendGridSettingsViewModel(AppDb db, IAlertService alerts)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
-
+        _alerts = alerts ?? throw new ArgumentNullException(nameof(alerts));
+        
         // Make sure computed flags are correct with defaults.
         RecalcIsValid();
     }
@@ -172,6 +175,8 @@ public partial class SendGridSettingsViewModel : ObservableObject
             };
 
             await _db.SaveSendGridSettingsAsync(s);
+
+            await _alerts.ShowAsync("Updated", "Settings have been saved.");
 
             StatusMessage = "Saved.";
         }

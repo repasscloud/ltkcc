@@ -7,9 +7,13 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="12">
-            <!-- Base Dir -->
-            <Label Text="Base Directory" />
-            <Entry Text="{Binding BaseDir}" />
+
+            <Grid ColumnDefinitions="160,*,Auto" ColumnSpacing="12">
+                <Label Text="Base Directory" VerticalTextAlignment="Center" />
+                <Entry Grid.Column="1" Text="{Binding BaseDir}" IsReadOnly="True" />
+                <Button Grid.Column="2" Text="Open" Clicked="OnOpenBaseDirClicked" />
+            </Grid>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

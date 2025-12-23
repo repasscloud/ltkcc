@@ -96,6 +96,14 @@ public partial class TemplatesPage : ContentPage
             await using var src = await picked.OpenReadAsync();
             await _files.ImportAsync(targetName, src, overwrite);
 
+            var destPath = Path.Combine(AppPaths.GetTemplatesDir(), targetName);
+
+            if (!File.Exists(destPath))
+            {
+                await DisplayAlert("Import failed", $"Expected file not found:\n{destPath}", "OK");
+                return;
+            }
+
             await _vm.RefreshAsync();
         }
         catch (Exception ex)

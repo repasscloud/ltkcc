@@ -17,7 +17,7 @@ public static class AppPaths
         Directory.CreateDirectory(dir);
         return dir;
 #else
-        var dir = FileSystem.AppDataDirectory;
+        var dir = Path.Combine(FileSystem.AppDataDirectory, "LTKCC");
         Directory.CreateDirectory(dir);
         return dir;
 #endif
@@ -28,5 +28,10 @@ public static class AppPaths
         var dir = Path.Combine(GetBaseDataDir(), "Templates");
         Directory.CreateDirectory(dir);
         return dir;
+    }
+
+    public static string GetDatabasePath()
+    {
+        return Path.Combine(GetBaseDataDir(), "ltkcc.db3");
     }
 }

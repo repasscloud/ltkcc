@@ -14,11 +14,13 @@ public sealed class TemplateFileService : ITemplateFileService
         var dir = AppPaths.GetTemplatesDir();
         Directory.CreateDirectory(dir);
 
-        // IMPORTANT: Path.GetFileName returns string? so force it to string to avoid CS8620.
-        var files = Directory.EnumerateFiles(dir, "*.html", SearchOption.TopDirectoryOnly)
-            .Select(Path.GetFileName)                         // string?
+        var files = Directory.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly)
+            .Select(Path.GetFileName)
             .Where(n => !string.IsNullOrWhiteSpace(n))
-            .Select(n => n!)                                  // now string
+            .Select(n => n!)
+            .Where(n =>
+                n.EndsWith(".html", StringComparison.OrdinalIgnoreCase) ||
+                n.EndsWith(".htm", StringComparison.OrdinalIgnoreCase))
             .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
@@ -43,6 +45,27 @@ public sealed class TemplateFileService : ITemplateFileService
 
         Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
         await File.WriteAllTextAsync(fullPath, content ?? string.Empty).ConfigureAwait(false);
+    }
+
+    // THIS is what the Add button needs (copy picked file into Templates dir)
+    public async Task ImportAsync(string fileName, Stream source, bool overwrite)
+    {
+        if (source is null) throw new ArgumentNullException(nameof(source));
+
+        var safeName = NormalizeFileName(fileName);
+        var fullPath = GetFullPathValidated(safeName);
+
+        if (!overwrite && File.Exists(fullPath))
+            throw new IOException("File already exists.");
+
+        Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
+
+        if (source.CanSeek)
+            source.Position = 0;
+
+        await using var dest = File.Open(fullPath, FileMode.Create, FileAccess.Write, FileShare.None);
+        await source.CopyToAsync(dest).ConfigureAwait(false);
+        await dest.FlushAsync().ConfigureAwait(false);
     }
 
     public Task DeleteAsync(string fileName)
@@ -74,23 +97,6 @@ public sealed class TemplateFileService : ITemplateFileService
         return Task.CompletedTask;
     }
 
-    public async Task ImportAsync(string fileName, Stream source, bool overwrite)
-    {
-        var safeName = NormalizeFileName(fileName);
-        var fullPath = GetFullPathValidated(safeName);
-
-        if (!overwrite && File.Exists(fullPath))
-            throw new IOException("File already exists.");
-
-        Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
-
-        if (source.CanSeek)
-            source.Position = 0;
-
-        await using var dest = File.Open(fullPath, FileMode.Create, FileAccess.Write, FileShare.None);
-        await source.CopyToAsync(dest).ConfigureAwait(false);
-    }
-
     private static string GetFullPathValidated(string fileName)
     {
         var safe = NormalizeFileName(fileName);
@@ -101,7 +107,6 @@ public sealed class TemplateFileService : ITemplateFileService
         var fullPath = Path.GetFullPath(Path.Combine(dir, safe));
         var fullDir = Path.GetFullPath(dir);
 
-        // Block path traversal
         if (!fullPath.StartsWith(fullDir + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
             && !string.Equals(fullPath, fullDir, StringComparison.OrdinalIgnoreCase))
         {
@@ -114,21 +119,24 @@ public sealed class TemplateFileService : ITemplateFileService
     public static string NormalizeFileName(string? input)
     {
         var name = (input ?? string.Empty).Trim();
-
         if (string.IsNullOrWhiteSpace(name))
             throw new InvalidOperationException("File name is required.");
 
-        // Keep only the file name (no paths)
         name = Path.GetFileName(name);
 
-        // Normalize .htm -> .html
-        if (name.EndsWith(".htm", StringComparison.OrdinalIgnoreCase) &&
-            !name.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+        var ext = Path.GetExtension(name);
+
+        if (string.IsNullOrEmpty(ext))
         {
-            name = name[..^4] + ".html";
+            name += ".html";
         }
-        else if (!name.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+        else if (ext.Equals(".htm", StringComparison.OrdinalIgnoreCase))
         {
+            name = Path.ChangeExtension(name, ".html");
+        }
+        else if (!ext.Equals(".html", StringComparison.OrdinalIgnoreCase))
+        {
+            // keep original extension but ensure it ends with .html
             name += ".html";
         }
 
