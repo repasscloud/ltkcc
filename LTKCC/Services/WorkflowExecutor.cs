@@ -7,7 +7,7 @@ public sealed class WorkflowExecutor
 {
     private readonly SQLiteAsyncConnection _db;
 
-    public WorkflowExecutor(LTKCC.Data.AppDb appDb) => _db = appDb.Db;
+    public WorkflowExecutor(LTKCC.Data.AppDb appDb) => _db = appDb.Connection;
 
     public async Task<Guid> ExecuteScheduledTaskAsync(ScheduledTaskRow task, WorkflowRow workflow)
     {

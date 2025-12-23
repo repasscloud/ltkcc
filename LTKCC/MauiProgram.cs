@@ -31,7 +31,11 @@ public static class MauiProgram
 		builder.Services.AddTransient<SupportedApplicationsViewModel>();
 		builder.Services.AddTransient<SupportedApplicationsPage>();
 
+		builder.Services.AddTransient<SendGridSettingsViewModel>();
+		builder.Services.AddTransient<SendGridSettingsPage>();
 
+		// builder.Services.AddTransient<WorkflowRunnerViewModel>();
+		// builder.Services.AddTransient<WorkflowRunnerPage>();
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif

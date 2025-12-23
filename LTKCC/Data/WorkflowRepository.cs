@@ -7,7 +7,7 @@ public sealed class WorkflowRepository
 {
     private readonly SQLiteAsyncConnection _db;
 
-    public WorkflowRepository(AppDb appDb) => _db = appDb.Db;
+    public WorkflowRepository(AppDb appDb) => _db = appDb.Connection;
 
     public Task<List<WorkflowRow>> ListAsync(bool activeOnly = true)
     {

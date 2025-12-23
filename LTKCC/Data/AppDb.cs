@@ -1,19 +1,32 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
-using LTKCC.Models;
 using Microsoft.Maui.Storage;
 using SQLite;
+using LTKCC.Models;
+using LTKCC.Security;
+using System.Reflection;
 
 namespace LTKCC.Data;
 
 public sealed class AppDb
 {
     private readonly SQLiteAsyncConnection _db;
-    public SQLiteAsyncConnection Db => _db;
+    public SQLiteAsyncConnection Connection => _db;
 
     public AppDb()
     {
+#if WINDOWS
+        var dir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+            "LTKCC");
+
+        Directory.CreateDirectory(dir);
+
+        var dbPath = Path.Combine(dir, "ltkcc.db3");
+#else
         var dbPath = Path.Combine(FileSystem.AppDataDirectory, "ltkcc.db3");
+#endif
 
         _db = new SQLiteAsyncConnection(
             dbPath,
@@ -22,25 +35,43 @@ public sealed class AppDb
             SQLiteOpenFlags.SharedCache);
     }
 
-    public SQLiteAsyncConnection Connection => _db;
-
-    // Initialize database tables
     public async Task InitAsync()
     {
+        // ---- SendGridSettings (singleton) ----
+        await _db.CreateTableAsync<SendGridSettings>();
+
+        var existing = await _db.Table<SendGridSettings>()
+                                .Where(x => x.Id == 1)
+                                .FirstOrDefaultAsync();
+
+        if (existing is null)
+        {
+            var seeded = EncryptForStorage(new SendGridSettings
+            {
+                Id = 1,
+                ApiUri = "https://api.sendgrid.com/v3/mail/send",
+                FromEmail = "",
+                FromName = "",
+                KeyName = "",
+                ApiKey = ""
+            });
+
+            await _db.InsertAsync(seeded);
+        }
+
+
+        // ---- Other tables ----
         await _db.CreateTableAsync<Client>();
-        // Enforce uniqueness case-insensitively too (optional but recommended).
-        // Default table name for sqlite-net is the class name: "Client".
         await _db.ExecuteAsync(
-            "CREATE UNIQUE INDEX IF NOT EXISTS IX_Client_Name_NOCASE ON Client(Name COLLATE NOCASE);"
-        );
+            $"CREATE UNIQUE INDEX IF NOT EXISTS IX_{TableName<Client>()}_Name_NOCASE " +
+            $"ON {TableName<Client>()}(Name COLLATE NOCASE);");
 
         await _db.CreateTableAsync<SupportedApplication>();
         await _db.ExecuteAsync(
-            "CREATE UNIQUE INDEX IF NOT EXISTS IX_SupportedApplication_Name_NOCASE ON SupportedApplication(Name COLLATE NOCASE);"
-        );
+            $"CREATE UNIQUE INDEX IF NOT EXISTS IX_{TableName<SupportedApplication>()}_Name_NOCASE " +
+            $"ON {TableName<SupportedApplication>()}(Name COLLATE NOCASE);");
 
         await _db.CreateTableAsync<AppEnv>();
-        
         await _db.CreateTableAsync<HtmlTemplate>();
 
         await _db.CreateTableAsync<DistributionListRow>();
@@ -52,32 +83,99 @@ public sealed class AppDb
         await _db.CreateTableAsync<ScheduledTaskRunRow>();
         await _db.CreateTableAsync<WorkflowStepRunRow>();
 
-        // Useful indexes (sqlite-net attribute indexes are fine, but these help enforce patterns).
-        await _db.ExecuteAsync(@"
-            CREATE INDEX IF NOT EXISTS IX_WorkflowSteps_WorkflowId_Version_Order
-            ON WorkflowSteps (WorkflowId, WorkflowVersion, StepOrder);");
+        // Indexes — table names must match what sqlite-net created.
+        await _db.ExecuteAsync($@"
+            CREATE INDEX IF NOT EXISTS IX_{TableName<WorkflowStepRow>()}_WorkflowId_Version_Order
+            ON {TableName<WorkflowStepRow>()} (WorkflowId, WorkflowVersion, StepOrder);");
 
-        await _db.ExecuteAsync(@"
-            CREATE INDEX IF NOT EXISTS IX_ScheduledTasks_WorkflowId_Version
-            ON ScheduledTasks (WorkflowId, WorkflowVersion);");
+        await _db.ExecuteAsync($@"
+            CREATE INDEX IF NOT EXISTS IX_{TableName<ScheduledTaskRow>()}_WorkflowId_Version
+            ON {TableName<ScheduledTaskRow>()} (WorkflowId, WorkflowVersion);");
 
-        await _db.ExecuteAsync(@"
-            CREATE INDEX IF NOT EXISTS IX_ScheduledTaskRuns_TaskId_StartedUtc
-            ON ScheduledTaskRuns (ScheduledTaskId, StartedUtc);");
+        await _db.ExecuteAsync($@"
+            CREATE INDEX IF NOT EXISTS IX_{TableName<ScheduledTaskRunRow>()}_TaskId_StartedUtc
+            ON {TableName<ScheduledTaskRunRow>()} (ScheduledTaskId, StartedUtc);");
 
-        await _db.ExecuteAsync(@"
-            CREATE INDEX IF NOT EXISTS IX_WorkflowStepRuns_RunId_Order
-            ON WorkflowStepRuns (ScheduledTaskRunId, StepOrder);");
+        await _db.ExecuteAsync($@"
+            CREATE INDEX IF NOT EXISTS IX_{TableName<WorkflowStepRunRow>()}_RunId_Order
+            ON {TableName<WorkflowStepRunRow>()} (ScheduledTaskRunId, StepOrder);");
     }
 
-    // public Task InitAsync() => _db.CreateTableAsync<Setting>();
+    // Save (encrypt on write)
+    public Task SaveSendGridSettingsAsync(SendGridSettings settings)
+    {
+        if (settings is null) throw new ArgumentNullException(nameof(settings));
 
-    // public Task<int> UpsertSettingAsync(string key, string value)
-    //     => _db.InsertOrReplaceAsync(new Setting { Key = key, Value = value });
+        settings.Id = 1;
+        var toStore = EncryptForStorage(settings);
+        return _db.InsertOrReplaceAsync(toStore);
+    }
 
-    // public Task<Setting?> GetSettingAsync(string key)
-    //     => _db.Table<Setting>().Where(x => x.Key == key).FirstOrDefaultAsync();
+    // Read (decrypt on read)
+    public async Task<SendGridSettings> GetSendGridSettingsAsync()
+    {
+        var row = await _db.Table<SendGridSettings>()
+                           .Where(x => x.Id == 1)
+                           .FirstOrDefaultAsync();
 
-    // public Task<int> DeleteSettingAsync(string key)
-    //     => _db.Table<Setting>().DeleteAsync(x => x.Key == key);
+        return row is null
+            ? new SendGridSettings { Id = 1 }
+            : DecryptFromStorage(row);
+    }
+
+    private static SendGridSettings EncryptForStorage(SendGridSettings s) => new()
+    {
+        Id        = 1,
+        ApiUri    = s.ApiUri,
+        FromEmail = s.FromEmail,
+        FromName  = s.FromName,
+        KeyName   = EncryptIfNeeded(s.KeyName),
+        ApiKey    = EncryptIfNeeded(s.ApiKey),
+    };
+
+    private static SendGridSettings DecryptFromStorage(SendGridSettings s) => new()
+    {
+        Id        = 1,
+        ApiUri    = s.ApiUri,
+        FromEmail = s.FromEmail,
+        FromName  = s.FromName,
+
+        // Do NOT call Decrypt() unless it looks encrypted
+        KeyName   = DecryptIfNeeded(s.KeyName),
+        ApiKey    = DecryptIfNeeded(s.ApiKey),
+    };
+
+    private static bool IsEncrypted(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return false;
+
+        return value.StartsWith("enc:v2:", StringComparison.Ordinal)
+            || value.StartsWith("enc:v1:", StringComparison.Ordinal);
+    }
+
+    private static string DecryptIfNeeded(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return string.Empty;
+
+        return IsEncrypted(value) ? EncryptionTool.Decrypt(value) : value;
+    }
+
+    private static string EncryptIfNeeded(string? value)
+    {
+        value ??= string.Empty;
+
+        return (value.StartsWith("enc:v2:", StringComparison.Ordinal) ||
+                value.StartsWith("enc:v1:", StringComparison.Ordinal))
+            ? value
+            : EncryptionTool.Encrypt(value);
+    }
+
+    // Returns the real sqlite table name, respecting [Table("Name")] when present.
+    private static string TableName<T>()
+    {
+        var tableAttr = typeof(T).GetCustomAttribute<TableAttribute>();
+        return string.IsNullOrWhiteSpace(tableAttr?.Name)
+            ? typeof(T).Name
+            : tableAttr!.Name;
+    }
 }

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="LTKCC.Views.SendGridSettingsPage"
+    Title="SendGrid Settings">
+
+    <!-- Simple layout: a scroll view with a stack -->
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+
+            <!-- Busy indicator -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}" />
+
+            <!-- Status message -->
+            <Label Text="{Binding StatusMessage}"
+                   FontSize="12"
+                   Opacity="0.8" />
+
+            <!-- ApiUri -->
+            <Label Text="API URI" />
+            <Entry Text="{Binding ApiUri}"
+                   Placeholder="https://api.sendgrid.com/v3/mail/send"
+                   Keyboard="Url" />
+
+            <!-- KeyName -->
+            <Label Text="Key Name (encrypted in DB)" />
+            <Entry Text="{Binding KeyName}"
+                   Placeholder="SG.API.Key" />
+
+            <!-- ApiKey -->
+            <Label Text="API Key (encrypted in DB)" />
+            <Entry Text="{Binding ApiKey}"
+                   Placeholder="Your SendGrid API key"
+                   IsPassword="True" />
+
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Clear API Key"
+                        Command="{Binding ClearApiKeyCommand}" />
+            </HorizontalStackLayout>
+
+            <!-- FromEmail -->
+            <Label Text="From Email" />
+            <Entry Text="{Binding FromEmail}"
+                   Placeholder="no-reply@example.com"
+                   Keyboard="Email" />
+
+            <!-- FromName -->
+            <Label Text="From Name" />
+            <Entry Text="{Binding FromName}"
+                   Placeholder="LTKCC" />
+
+            <!-- Save / Reload -->
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Reload"
+                        Command="{Binding LoadCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" />
+
+                <Button Text="Save"
+                        Command="{Binding SaveCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" />
+            </HorizontalStackLayout>
+
+            <!-- If you don't want converters, remove IsEnabled bindings (or disable manually in VM). -->
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

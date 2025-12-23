@@ -7,7 +7,7 @@ public sealed class ScheduledTaskRepository
 {
     private readonly SQLiteAsyncConnection _db;
 
-    public ScheduledTaskRepository(AppDb appDb) => _db = appDb.Db;
+    public ScheduledTaskRepository(AppDb appDb) => _db = appDb.Connection;
 
     public Task<List<ScheduledTaskRow>> ListAsync(bool enabledOnly = false)
     {

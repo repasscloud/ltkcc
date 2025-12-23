@@ -39,6 +39,10 @@
         <ShellContent Title="Supported Applications" ContentTemplate="{DataTemplate views:SupportedApplicationsPage}" />
     </FlyoutItem>
 
+    <FlyoutItem Title="SendGrid Settings" Route="sendgridsettings">
+        <ShellContent Title="SendGrid Settings" ContentTemplate="{DataTemplate views:SendGridSettingsPage}" />
+    </FlyoutItem>
+
     <FlyoutItem Title="Settings" Route="settings">
         <ShellContent Title="Settings" ContentTemplate="{DataTemplate views:SettingsPage}" />
     </FlyoutItem>

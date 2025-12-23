@@ -25,6 +25,21 @@ public static class EncryptionTool
     private const byte VersionV1 = 1;
     private const string PrefixV1 = "enc:v1:";
 
+    public static bool IsEncrypted(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return false;
+
+        return value.StartsWith(PrefixV2, StringComparison.Ordinal)
+            || value.StartsWith(PrefixV1, StringComparison.Ordinal);
+    }
+
+    public static string DecryptIfNeeded(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return string.Empty;
+
+        return IsEncrypted(value) ? Decrypt(value) : value;
+    }
+
     public static string Encrypt(string plaintext)
     {
         if (plaintext is null) throw new ArgumentNullException(nameof(plaintext));

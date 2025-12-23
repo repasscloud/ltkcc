@@ -1,6 +1,7 @@
 using SQLite;
 using LTKCC.Models;
 using LTKCC.Validation;
+using System.Text;
 
 namespace LTKCC.Data;
 
@@ -8,16 +9,16 @@ public sealed class DistributionListRepository
 {
     private readonly SQLiteAsyncConnection _db;
 
-    public DistributionListRepository(AppDb appDb) => _db = appDb.Db;
+    public DistributionListRepository(AppDb appDb) => _db = appDb.Connection;
 
     public async Task InitAsync()
     {
         await _db.CreateTableAsync<DistributionListRow>();
         await _db.CreateTableAsync<DistributionListEmailRow>();
 
-        await _db.ExecuteAsync(@"
-CREATE UNIQUE INDEX IF NOT EXISTS UX_DLEmails_ListId_Email
-ON DistributionListEmails (DistributionListId, Email);");
+        await _db.ExecuteAsync($@"
+            CREATE UNIQUE INDEX IF NOT EXISTS UX_DLEmails_ListId_Email
+            ON {nameof(DistributionListEmailRow)} (DistributionListId, Email);");
     }
 
     public Task<List<DistributionListRow>> ListAsync()
@@ -52,7 +53,7 @@ ON DistributionListEmails (DistributionListId, Email);");
         {
             tran.InsertOrReplace(dl);
 
-            tran.Execute("DELETE FROM DistributionListEmails WHERE DistributionListId = ?", dl.Id);
+            tran.Execute($"DELETE FROM {nameof(DistributionListEmailRow)} WHERE DistributionListId = ?", dl.Id);
 
             foreach (var email in normalized)
             {
