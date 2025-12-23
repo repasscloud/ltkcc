@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LTKCC.Views.DistributionListsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:LTKCC.ViewModels"
+    Title="Distribution Lists">
+
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="320,*" Padding="12" ColumnSpacing="12" RowSpacing="12">
+
+        <!-- Top bar -->
+        <Grid Grid.Row="0" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10">
+            <Label
+                Grid.Column="0"
+                Text="{Binding Status}"
+                VerticalOptions="Center"
+                LineBreakMode="TailTruncation" />
+
+            <ActivityIndicator
+                Grid.Column="1"
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}"
+                VerticalOptions="Center" />
+
+            <Button
+                Grid.Column="2"
+                Text="New DL"
+                Command="{Binding NewCommand}"
+                IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}, FallbackValue=True}" />
+
+            <Button
+                Grid.Column="3"
+                Text="Delete DL"
+                Command="{Binding DeleteCommand}"
+                IsEnabled="{Binding Selected, Converter={StaticResource NullToBoolConverter}, FallbackValue=False}" />
+        </Grid>
+
+        <!-- Left list -->
+        <Frame Grid.Row="1" Grid.Column="0" Padding="8">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Lists" FontAttributes="Bold" />
+                <CollectionView
+                    ItemsSource="{Binding Lists}"
+                    SelectionMode="Single"
+                    SelectedItem="{Binding Selected}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="8" ColumnDefinitions="*,Auto">
+                                <Label Text="{Binding Name}" LineBreakMode="TailTruncation" />
+                                <Label Grid.Column="1" Text="{Binding Id}" Opacity="0.4" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Right editor -->
+        <Frame Grid.Row="1" Grid.Column="1" Padding="12">
+            <VerticalStackLayout Spacing="12">
+
+                <Label Text="Edit" FontAttributes="Bold" />
+
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" RowDefinitions="Auto">
+                    <Label Text="DL Name" VerticalOptions="Center" />
+                    <Entry Grid.Column="1" Text="{Binding Name}" Placeholder="e.g. DL-Internal" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Label Text="Recipients" FontAttributes="Bold" VerticalOptions="Center" />
+                    <Button Text="Add row" Command="{Binding AddRowCommand}" HorizontalOptions="End" />
+                </Grid>
+
+                <Grid RowDefinitions="Auto,*" RowSpacing="8">
+                    <!-- Header -->
+                    <Grid ColumnDefinitions="220,*,Auto" ColumnSpacing="10">
+                        <Label Text="Display Name" Opacity="0.6" />
+                        <Label Grid.Column="1" Text="Email" Opacity="0.6" />
+                        <Label Grid.Column="2" Text="" />
+                    </Grid>
+
+                    <!-- Rows -->
+                    <CollectionView Grid.Row="1" ItemsSource="{Binding Emails}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="220,*,Auto" ColumnSpacing="10" Padding="0,6">
+                                    <Entry Text="{Binding DisplayName}" Placeholder="Optional" />
+                                    <Entry Grid.Column="1" Text="{Binding Email}" Placeholder="person@domain.com" Keyboard="Email" />
+                                    <Button
+                                        Grid.Column="2"
+                                        Text="Remove"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveRowCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+
+                <Button
+                    Text="Save"
+                    Command="{Binding SaveCommand}"
+                    HorizontalOptions="End"
+                    Padding="18,10" />
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
+</ContentPage>

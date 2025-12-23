@@ -22,6 +22,7 @@ public static class MauiProgram
 			});
 
 		builder.Services.AddSingleton<Data.AppDb>();
+		builder.Services.AddSingleton<Data.DistributionListRepository>();
 
 		builder.Services.AddSingleton<IClientService, ClientService>();
 		builder.Services.AddSingleton<ISupportedApplicationService, SupportedApplicationService>();
@@ -33,6 +34,9 @@ public static class MauiProgram
 
 		builder.Services.AddTransient<SendGridSettingsViewModel>();
 		builder.Services.AddTransient<SendGridSettingsPage>();
+
+		builder.Services.AddTransient<DistributionListsViewModel>();
+		builder.Services.AddTransient<DistributionListsPage>();
 
 		// builder.Services.AddTransient<WorkflowRunnerViewModel>();
 		// builder.Services.AddTransient<WorkflowRunnerPage>();

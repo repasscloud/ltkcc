@@ -1,17 +1,20 @@
+// File: Models/DistributionListEmailRow.cs
 using SQLite;
 
 namespace LTKCC.Models;
 
-[Table("DistributionListEmails")]
+[Table("DistributionListEmail")]
 public sealed class DistributionListEmailRow
 {
-    [PrimaryKey]
-    public Guid Id { get; set; }
+    [PrimaryKey, AutoIncrement]
+    public int Id { get; set; }
 
     [Indexed]
-    public Guid DistributionListId { get; set; }
+    public int DistributionListId { get; set; }
 
-    // Stored normalized (lowercase, trimmed)
-    [Indexed]
+    [MaxLength(320)]
     public string Email { get; set; } = "";
+
+    [MaxLength(200)]
+    public string DisplayName { get; set; } = "";
 }

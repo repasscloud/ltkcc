@@ -18,6 +18,7 @@
 
             <!-- Converters (must be registered here if referenced via StaticResource) -->
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

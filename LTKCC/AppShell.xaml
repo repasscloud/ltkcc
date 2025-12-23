@@ -27,16 +27,16 @@
         <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Home" Route="home">
-        <ShellContent Title="Home" ContentTemplate="{DataTemplate views:HomePage}" />
-    </FlyoutItem>
-
     <FlyoutItem Title="Clients" Route="clients">
         <ShellContent Title="Clients" ContentTemplate="{DataTemplate views:ClientsPage}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Supported Applications" Route="supportedapplications">
         <ShellContent Title="Supported Applications" ContentTemplate="{DataTemplate views:SupportedApplicationsPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Distribution Lists" Route="distributionlists">
+        <ShellContent ContentTemplate="{DataTemplate views:DistributionListsPage}" />
     </FlyoutItem>
 
     <FlyoutItem Title="SendGrid Settings" Route="sendgridsettings">

@@ -1,22 +1,18 @@
+// File: Models/DistributionListRow.cs
 using SQLite;
-using LTKCC.Models.Static;
 
 namespace LTKCC.Models;
 
-[Table("DistributionLists")]
+[Table("DistributionList")]
 public sealed class DistributionListRow
 {
-    [PrimaryKey]
-    public Guid Id { get; set; }
+    [PrimaryKey, AutoIncrement]
+    public int Id { get; set; }
 
-    [Indexed]
+    [MaxLength(200)]
     public string Name { get; set; } = "";
 
-    public DLType Type { get; set; } = DLType.To;
-    public DLPrivacyType Privacy { get; set; } = DLPrivacyType.External;
-
-    // Convenience only (not stored in DistributionLists table).
-    // Stored via DistributionListEmailRow table instead.
-    [Ignore]
-    public List<string> Emails { get; set; } = new();
+    // Optional metadata (safe defaults)
+    public long CreatedUtcTicks { get; set; } = DateTime.UtcNow.Ticks;
+    public long UpdatedUtcTicks { get; set; } = DateTime.UtcNow.Ticks;
 }

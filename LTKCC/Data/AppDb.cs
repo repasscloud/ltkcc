@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.Maui.Storage;
 using SQLite;
 using LTKCC.Models;
 using LTKCC.Security;
@@ -12,7 +8,7 @@ namespace LTKCC.Data;
 public sealed class AppDb
 {
     private readonly SQLiteAsyncConnection _db;
-    public SQLiteAsyncConnection Connection => _db;
+    private bool _inited;
 
     public AppDb()
     {
@@ -35,8 +31,12 @@ public sealed class AppDb
             SQLiteOpenFlags.SharedCache);
     }
 
+    public SQLiteAsyncConnection Connection => _db;
+
     public async Task InitAsync()
     {
+        if (_inited) return;
+        
         // ---- SendGridSettings (singleton) ----
         await _db.CreateTableAsync<SendGridSettings>();
 
@@ -99,6 +99,8 @@ public sealed class AppDb
         await _db.ExecuteAsync($@"
             CREATE INDEX IF NOT EXISTS IX_{TableName<WorkflowStepRunRow>()}_RunId_Order
             ON {TableName<WorkflowStepRunRow>()} (ScheduledTaskRunId, StepOrder);");
+
+        _inited = true;
     }
 
     // Save (encrypt on write)
